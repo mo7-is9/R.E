@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Ovo&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     1) COLOR PALETTE
+  ============================================================ */
+  :root{
+    --cream: #f9f0e0;
+    --gold: #a67d2b;
+    --gold-light: #b48c3d;
+    --brown: #6c513f;
+    --brown-soft: #846f61;
+    --wine: #5A0F1B;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+ 
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--cream);
+    color:var(--brown);
+    font-family:'Cormorant Garamond', Georgia, serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  img{ max-width:100%; display:block; }
+
+  /* ============================================================
+     8) GENERAL PAGE STRUCTURE
+  ============================================================ */
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 24px;
+    text-align:center;
+  }
+
+  section{
+    padding:70px 0;
+  }
+
+  @media (max-width:600px){
+    section{ padding:52px 0; }
+  }
+
+  .reveal{
+    opacity:0;
+    transform:translateY(30px);
+    transition:opacity 1.2s ease, transform 1.2s ease;
+  }
+  .reveal.in{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  .decor{
+    display:block;
+    margin:18px auto;
+  }
+  .decor-sm{ width:70px; }
+  .decor-md{ width:110px; }
+
+  /* ============================================================
+     5) OPENING ENVELOPE OVERLAY
+  ============================================================ */
+  #envelopeOverlay{
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    background:var(--cream);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:opacity 1.4s ease;
+  }
+  #envelopeOverlay.fade-out{
+    opacity:0;
+    pointer-events:none;
+  }
+  .envelope-inner{
+    position:relative;
+    width:100%;
+    max-width:440px;
+    padding:0 24px;
+    text-align:center;
+  }
+  .envelope-inner img{
+    width:100%;
+    max-width:440px;
+    margin:0 auto;
+  }
+  .tap-open{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:22%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    opacity:0;
+    transform:translateY(14px);
+    transition:opacity .8s ease, transform .8s ease;
+  }
+  .tap-open.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .chevron-pulse{
+    width:12px;
+    height:12px;
+    border-right:1px solid rgba(140,100,60,.75);
+    border-bottom:1px solid rgba(140,100,60,.75);
+    transform:rotate(45deg);
+    animation:chevronPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes chevronPulse{
+    0%,100%{ opacity:.4; }
+    50%{ opacity:1; }
+  }
+  .tap-open-label{
+    font-family:'Cinzel', Georgia, serif;
+    font-size:11px;
+    letter-spacing:.26em;
+    color:rgba(140,100,60,.75);
+    animation:tapPulse 2.2s ease-in-out infinite;
+  }
+  @keyframes tapPulse{
+    0%,100%{ opacity:.55; letter-spacing:.26em; }
+    50%{ opacity:1; letter-spacing:.34em; }
+  }
+
+  /* ============================================================
+     6) OPENING VIDEO SEQUENCE
+  ============================================================ */
+  #introVideoWrap{
+    position:fixed;
+    inset:0;
+    z-index:100000;
+    background:#000;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 1.4s ease;
+  }
+  #introVideoWrap.show{
+    opacity:1;
+    pointer-events:all;
+  }
+  #introVideo{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+
+  /* ============================================================
+     7) FLOATING AUDIO CONTROL BUTTON
+  ============================================================ */
+  #audioBtn{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:var(--wine);
+    box-shadow:0 4px 10px rgba(0,0,0,.18);
+    z-index:2147483647;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    border:none;
+    visibility:hidden;
+    opacity:0;
+    transition:opacity .3s ease;
+  }
+  #audioBtn.show{
+    visibility:visible;
+    opacity:1;
+  }
+  #audioBtn svg{ width:20px; height:20px; fill:#fff; }
+  #iconPlay{ display:none; }
+
+  /* ============================================================
+     9) HERO SECTION
+  ============================================================ */
+  #hero{ padding-top:90px; }
+  .eyebrow{
+    font-family:'Cinzel', Georgia, serif;
+    color:var(--gold);
+    font-size:26px;
+    letter-spacing:.06em;
+  }
+  .wedding-date{
+    font-family:'Cinzel', Georgia, serif;
+    font-weight:600;
+    font-size:20px;
+    color:var(--gold);
+    margin-top:14px;
+    letter-spacing:.08em;
+  }
+  .couple-names{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-style:italic;
+    color:var(--gold);
+    font-size:76px;
+    font-weight:500;
+    line-height:1.15;
+    margin-top:24px;
+  }
+  .couple-names .amp{
+    display:block;
+    font-size:40px;
+    margin:6px 0;
+  }
+  @media (max-width:600px){
+    .couple-names{ font-size:54px; }
+  }
+  .scroll-label{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    color:var(--gold);
+    font-size:26px;
+    margin-top:46px;
+  }
+  .scroll-chevron{
+    display:block;
+    margin:14px auto 0;
+    width:24px;
+    height:15px;
+    animation:chevronBob 1.4s ease-in-out infinite;
+  }
+  @keyframes chevronBob{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(6px); }
+  }
+  .swans-video{
+    max-width:280px;
+    margin:40px auto 0;
+    width:100%;
+  }
+  .flower-row{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-top:30px;
+  }
+  .flower-row img{ width:200px; }
+
+  /* ============================================================
+     10) VERSES / PRAYER SECTION
+  ============================================================ */
+  .bismillah{
+    font-family:'Amiri', serif;
+    color:var(--gold);
+    font-size:34px;
+    direction:rtl;
+  }
+  .verse{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-style:italic;
+    font-weight:500;
+    color:var(--gold);
+    font-size:38px;
+    line-height:1.4;
+    margin-top:24px;
+  }
+  .names {
+     font-family:'Amiri', serif;
+    color:var(--gold);
+    font-size:34px;
+    direction:rtl;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+  @media (max-width:600px){
+    .verse{ font-size:30px; }
+  }
+  .welcome-text{
+    font-weight:400;
+    color:var(--brown);
+    font-size:21px;
+    max-width:430px;
+    margin:26px auto 0;
+    line-height:1.6;
+  }
+
+  /* ============================================================
+     11) COUNTDOWN SECTION
+  ============================================================ */
+  .section-title{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    color:var(--gold);
+    font-size:41px;
+    font-weight:500;
+  }
+  @media (max-width:600px){
+    .section-title{ font-size:32px; }
+  }
+  .countdown{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap:14px;
+    margin-top:36px;
+    flex-wrap:wrap;
+  }
+  .cd-block{
+    min-width:70px;
+  }
+  @media (max-width:600px){
+    .cd-block{ min-width:56px; }
+  }
+  .cd-num-wrap{
+    height:60px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .cd-num, .cd-sep{
+    font-family:'Ovo', Georgia, serif;
+    font-size:46px;
+    background:linear-gradient(105deg,#B48C3D 0%,#B48C3D 25%,#cda95a 46%,#d8ba72 52%,#cda95a 58%,#B48C3D 75%,#B48C3D 100%);
+    background-size:300% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:shimmer 4.5s linear infinite;
+  }
+  @media (max-width:600px){
+    .cd-num, .cd-sep{ font-size:34px; }
+  }
+  @keyframes shimmer{
+    0%{ background-position:0% 0; }
+    100%{ background-position:300% 0; }
+  }
+  .cd-label{
+    font-family:'Ovo', Georgia, serif;
+    font-size:19px;
+    opacity:.85;
+    margin-top:6px;
+    color:var(--brown);
+  }
+  .cd-done{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-style:italic;
+    font-size:34px;
+    color:var(--gold);
+    margin-top:36px;
+  }
+
+  /* ============================================================
+     12) SCHEDULE SECTION
+  ============================================================ */
+  .timeline{
+    max-width:420px;
+    margin:40px auto 0;
+    position:relative;
+    padding-left:0;
+  }
+  .timeline::before{
+    content:'';
+    position:absolute;
+    left:calc(80px + 4.5px);
+    top:0;
+    bottom:0;
+    width:1px;
+    background:rgba(166,125,43,.35);
+  }
+  @media (max-width:600px){
+    .timeline::before{ left:calc(56px + 4.5px); }
+  }
+  .timeline-row{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:14px 0;
+  }
+  .tl-time{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-weight:600;
+    font-size:26px;
+    min-width:70px;
+    text-align:right;
+    color:var(--brown);
+  }
+  @media (max-width:600px){
+    .tl-time{ min-width:56px; font-size:22px; }
+  }
+  .tl-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--gold);
+    flex-shrink:0;
+  }
+  .tl-event{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-size:22px;
+    text-align:left;
+    color:var(--brown);
+  }
+
+  /* ============================================================
+     13) LOCATION SECTION
+  ============================================================ */
+  .map-frame{
+    position:relative;
+    max-width:360px;
+    margin:30px auto 0;
+  }
+  .map-link{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    max-width:360px;
+    height:250px;
+    width:100%;
+    border:1px solid var(--gold);
+    background:rgba(166,125,43,.06);
+    text-decoration:none;
+    font-family:'Cormorant Garamond', Georgia, serif;
+    color:var(--gold);
+    font-size:20px;
+    font-style:italic;
+    transition:background .3s ease;
+  }
+  .map-link:hover{ background:rgba(166,125,43,.14); }
+  .map-frame img.map-deco{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+  }
+
+  /* ============================================================
+     RSVP MODAL
+  ============================================================ */
+  .seal-btn{
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:0;
+    margin:26px auto 0;
+  }
+  .seal-btn img{
+    width:120px;
+    margin:0 auto;
+  }
+  .click-open{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-style:italic;
+    color:var(--gold);
+    font-size:24px;
+    margin-top:14px;
+  }
+  #rsvpModal{
+    position:fixed;
+    inset:0;
+    background:rgba(60,40,25,.55);
+    z-index:200000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  #rsvpModal.open{ display:flex; }
+  .modal-card{
+    background:var(--cream);
+    max-width:480px;
+    width:100%;
+    max-height:88vh;
+    overflow-y:auto;
+    padding:36px 30px;
+    position:relative;
+    border:1px solid var(--gold);
+  }
+  .modal-close{
+    position:absolute;
+    top:14px;
+    right:18px;
+    background:none;
+    border:none;
+    font-size:22px;
+    color:var(--brown);
+    cursor:pointer;
+    font-family:'Cormorant Garamond', Georgia, serif;
+  }
+  .modal-title{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    color:var(--gold);
+    font-size:32px;
+    text-align:center;
+  }
+  .modal-subtitle{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    color:var(--brown-soft);
+    font-size:17px;
+    text-align:center;
+    margin-top:8px;
+  }
+  .form-field{
+    margin-top:22px;
+    text-align:left;
+  }
+  .form-field label{
+    display:block;
+    font-family:'Cinzel', Georgia, serif;
+    font-size:12px;
+    letter-spacing:.08em;
+    color:var(--brown);
+    margin-bottom:8px;
+  }
+  .form-field input[type="text"],
+  .form-field input[type="number"]{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid rgba(166,125,43,.4);
+    background:#fff;
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-size:17px;
+    color:var(--brown);
+  }
+  .radio-group{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .radio-group label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-size:17px;
+    letter-spacing:0;
+    text-transform:none;
+    color:var(--brown);
+  }
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .toggle-row label{ margin-bottom:0; }
+  .helper-text{
+    font-size:13px;
+    color:var(--brown-soft);
+    margin-top:6px;
+    font-family:'Cormorant Garamond', Georgia, serif;
+  }
+  #childrenNamesField{
+    display:none;
+    margin-top:10px;
+  }
+  .submit-btn{
+    width:100%;
+    margin-top:28px;
+    padding:14px;
+    background:var(--wine);
+    color:#fff;
+    border:none;
+    font-family:'Cinzel', Georgia, serif;
+    font-size:14px;
+    letter-spacing:.1em;
+    cursor:pointer;
+  }
+  .thankyou{
+    text-align:center;
+    padding:20px 0;
+  }
+  .thankyou img{
+    width:100%;
+    max-height:220px;
+    object-fit:cover;
+    margin-bottom:20px;
+  }
+  .thankyou p{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    font-style:italic;
+    font-size:26px;
+    color:var(--gold);
+  }
+
+  /* ============================================================
+     17) FOOTER
+  ============================================================ */
+  footer{
+    padding:40px 0 90px;
+    font-style:italic;
+    color:var(--brown-soft);
+    font-size:18px;
+  }
+</style>
+</head>
+<script>
+
+  window.noload = window.noload || function(){
+   window.scrollTo({
+     top: document.body.scrollHeight,
+     behavior: 'smooth'
+   });
+ };
+</script>
+
+<body>
+
+
+<!-- ============================================================
+     BACKGROUND AUDIO
+============================================================ -->
+<audio id="weiAudio" loop>
+  <source src="https://pub-4dc8201144ca418fb604349c73e8c724.r2.dev/Einaudi_ Divenire (1) (1).mp3" type="audio/mp3">
+</audio>
+
+<!-- ============================================================
+     OPENING ENVELOPE OVERLAY
+============================================================ -->
+<div id="envelopeOverlay">
+  <div class="envelope-inner">
+    <img src="MO1.png" alt="Cream wedding envelope with embossed white floral branches and flowers along both sides, crossed with folded paper and sealed in the center by a dark red wax seal embossed with the gold letters R and E. A romantic, elegant invitation designed for Esam and Rawan">
+    <div class="tap-open" id="tapOpen">
+      <span class="chevron-pulse"></span>
+      <span class="tap-open-label">Tap to open</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     OPENING VIDEO SEQUENCE
+============================================================ -->
+<div id="introVideoWrap">
+  <video id="introVideo" muted playsinline preload="auto">
+    <source src="RE.mp4" type="video/mp4">
+  </video>
+</div>
+
+<!-- ============================================================
+     FLOATING AUDIO CONTROL BUTTON
+============================================================ -->
+<button id="audioBtn" aria-label="Toggle music">
+  <svg id="iconPause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg>
+  <svg id="iconPlay" viewBox="0 0 24 24"><path d="M7 5v14l12-7z"></path></svg>
+</button>
+
+<main class="wrap">
+
+  <!-- ============================================================
+       HERO SECTION
+  ============================================================ -->
+  <section id="hero">
+    <div class="eyebrow reveal">Wedding Day</div>
+    <div class="wedding-date reveal">12.12.26</div>
+    <h1 class="couple-names reveal">Esam<span class="amp">&amp;</span>Rawan</h1>
+    <div class="scroll-label reveal">Scroll down</div>
+    <svg class="scroll-chevron reveal" viewBox="0 0 25 15.86"><path fill="none" stroke="#937100" stroke-width="1" stroke-linecap="round" d="M1.0092 1.008C4.3691 5.4431 9.1402 9.565 12.5 14C16.8007 9.565 19.6901 5.4431 23.9908 1.008"/></svg>
+    <video class="swans-video reveal" autoplay muted loop playsinline>
+      <source src="https://pub-4dc8201144ca418fb604349c73e8c724.r2.dev/Swans2.mov" type="video/quicktime">
+      <source src="https://pub-4dc8201144ca418fb604349c73e8c724.r2.dev/Swans2.mov" type="video/mp4">
+    </video>
+    <div class="flower-row reveal">
+      <img src="https://static.tildacdn.net/tild6639-3363-4136-a234-356639363561/noroot.png" alt="">
+      <img src="https://static.tildacdn.net/tild3764-3461-4436-a562-636534643333/noroot.png" alt="">
+    </div>
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3336-3462-4961-a332-613731663665/623915249_2629494717.png" alt="">
+  </section>
+
+  <!-- ============================================================
+       VERSES / PRAYER SECTION
+  ============================================================ -->
+  <section id="verses">
+    <div class="bismillah reveal">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+    <div class="verse reveal">Two Souls<br>One destiny<br>A Lifetime written by Allah <br><br>وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً</div>
+  <br>
+    <div class="bismillah reveal">وبكل الحب والسرور نتشرّف</div>
+
+    
+      <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+
+<div class="names" dir="rtl">
+  <div class="name">
+    <span class="al">ال</span>
+    <span class="txt">عبدالله محمد الظافر</span>
+  </div>
+
+  <span class="waw">و</span>
+
+  <div class="name">
+    <span class="al">ال</span>
+    <span class="txt">اسماعيل علي اسماعيل</span>
+  </div>
+</div>
+<br>
+ <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+
+<div class="names" dir="rtl">
+  <div class="name">
+    <span class="al">ال</span>
+    <span class="txt">عثمان خلف الله احمد</span>
+  </div>
+
+  <span class="waw">و</span>
+
+  <div class="name">
+    <span class="al">ال</span>
+    <span class="txt">منصور عبد المطلب</span>
+    <br>
+  
+  </div>
+</div>
+<br>
+  <div class="bismillah reveal">بدعوتكم لحضور حفل زفاف</div>
+<br>
+<div class="bismillah reveal">
+  <span class="groom">RAWAN</span>
+  <span class="heart">♥</span>
+  <span class="bride">ESAM </span>
+</div>
+
+  <!-- ============================================================
+       COUNTDOWN SECTION
+  ============================================================ -->
+  <section id="countdown-section">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild6638-3365-4663-b834-363436333136/noroot.png" alt="">
+    <h2 class="section-title reveal">The Celebration Begins In</h2>
+    <div class="countdown reveal" id="countdownWrap">
+      <div class="cd-block">
+        <div class="cd-num-wrap"><span class="cd-num" id="cd-days">00</span></div>
+        <div class="cd-label">Days</div>
+      </div>
+      <div class="cd-num-wrap"><span class="cd-sep">:</span></div>
+      <div class="cd-block">
+        <div class="cd-num-wrap"><span class="cd-num" id="cd-hours">00</span></div>
+        <div class="cd-label">Hours</div>
+      </div>
+      <div class="cd-num-wrap"><span class="cd-sep">:</span></div>
+      <div class="cd-block">
+        <div class="cd-num-wrap"><span class="cd-num" id="cd-mins">00</span></div>
+        <div class="cd-label">Minutes</div>
+      </div>
+      <div class="cd-num-wrap"><span class="cd-sep">:</span></div>
+      <div class="cd-block">
+        <div class="cd-num-wrap"><span class="cd-num" id="cd-secs">00</span></div>
+        <div class="cd-label">Seconds</div>
+      </div>
+    </div>
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3633-3739-4961-b135-306530633566/noroot.png" alt="">
+  </section>
+
+  <!-- ============================================================
+       SCHEDULE SECTION
+  ============================================================ -->
+  <section id="schedule">
+    <h2 class="section-title reveal">Schedule of Events</h2>
+    <img class="decor decor-md reveal" src="https://static.tildacdn.net/tild3134-6461-4832-a236-633431616631/623915249_2629494717.png" alt="">
+    <div class="timeline reveal">
+        
+      <div class="timeline-row">
+        <div class="tl-time">7:30 PM</div>
+        <div class="tl-dot"></div>
+        <div class="tl-event">Event Begins</div>
+      </div>
+      <div class="timeline-row">
+        <div class="tl-time">11PM</div>
+        <div class="tl-dot"></div>
+        <div class="tl-event">Event Ends</div>
+      </div>
+    </div>
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3363-3665-4330-a361-666466346532/rose_-_Copy.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild6131-6362-4663-b461-626531656438/right-element_1.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3638-3336-4136-a131-633463346265/left-element_1.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3232-3638-4338-a134-336230313236/acomm-decor.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3637-3939-4864-a263-333836383139/ChatGPT_Image_May_25.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3865-6365-4762-a433-393764616530/noroot.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3061-3635-4666-b537-356639373733/noroot.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3164-3236-4638-a166-306230303738/noroot.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3162-6263-4433-a230-653935613338/noroot.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3138-6463-4261-a461-336165643531/noroot.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3034-6134-4462-b665-653163373262/noroot.png" alt="">
+  </section>
+
+  <!-- ============================================================
+       LOCATION SECTION
+  ============================================================ -->
+  <section id="location">
+    <h2 class="section-title reveal">Location</h2>
+    <h6 class="section-title reveal">قاعة البانسيه </h6>
+    <div class="map-frame reveal">
+      <a class="map-link" href="https://maps.app.goo.gl/KZQZMNeh7i8Wp7WN9?g_st=ipc" target="_blank" rel="noopener">View Location on Map</a>
+      <img class="map-deco" src="https://static.tildacdn.net/tild3830-3566-4961-a334-666539356637/Rectangle_270.svg" alt="">
+    </div>
+  </section>
+
+  <!-- ============================================================
+       DRESS CODE SECTION
+  ============================================================ -->
+  
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3931-3661-4661-b434-646566363730/noroot.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild6661-6464-4939-b433-346632643639/noroot.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3635-3664-4334-a163-376462623839/rose_-_Copy.png" alt="">
+    <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild6566-6366-4963-a666-386132623862/623915249_2629494717.png" alt="">
+  </section>
+  
+</main>
+
+<!-- ============================================================
+     RSVP MODAL
+============================================================ -->
+<div id="rsvpModal">
+  <div class="modal-card">
+    <button class="modal-close" id="closeModal" aria-label="Close">&times;</button>
+
+    <div id="rsvpFormView">
+      <h3 class="modal-title">Confirm Your Attendance</h3>
+      <p class="modal-subtitle">Please RSVP before August 09</p>
+
+      <form id="rsvpForm">
+        <div class="form-field">
+          <label for="guestName">Your name</label>
+          <input type="text" id="guestName" required>
+        </div>
+
+        <div class="form-field">
+          <label>Will you be attending?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="attending" value="Accepts with pleasure" required> Accepts with pleasure</label>
+            <label><input type="radio" name="attending" value="Declines with regret"> Declines with regret</label>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="guestCount">Number of Guests Attending</label>
+          <input type="number" id="guestCount" min="0" step="1" value="1">
+        </div>
+
+        <div class="form-field">
+          <label for="songField">A Song That Gets You Dancing</label>
+          <input type="text" id="songField">
+        </div>
+
+        <div class="form-field">
+          <div class="toggle-row">
+            <input type="checkbox" id="childrenToggle">
+            <label for="childrenToggle">Children Attending</label>
+          </div>
+          <div class="helper-text">Please include names and ages.</div>
+          <div id="childrenNamesField">
+            <input type="text" id="childrenNames" placeholder="Names and ages">
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit</button>
+      </form>
+    </div>
+
+    <div class="thankyou" id="thankYouView" style="display:none;">
+      <img src="https://static.tildacdn.net/tild6235-3237-4230-b632-326437376662/pexels-vinicius-quar.jpg" alt="">
+      <p>Hope to see you there!</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <img class="decor decor-sm reveal" src="https://static.tildacdn.net/tild3732-6364-4131-b837-353363666335/623915249_2629494717.png" alt="" style="margin-bottom:6px;">
+  <div class="reveal">Esam and Rawan</div>
+</footer>
+
+<script>
+/* ============================================================
+   JS BLOCK 1: INTRO SEQUENCE (envelope -> video -> audio button)
+============================================================ */
+(function(){
+  const overlay = document.getElementById('envelopeOverlay');
+  const tapOpen = document.getElementById('tapOpen');
+  const videoWrap = document.getElementById('introVideoWrap');
+  const introVideo = document.getElementById('introVideo');
+  const audio = document.getElementById('weiAudio');
+  const audioBtn = document.getElementById('audioBtn');
+
+  window.addEventListener('load', function(){
+    setTimeout(function(){ tapOpen.classList.add('show'); }, 800);
+  });
+
+  function revealMainContentImmediately(){
+    videoWrap.classList.remove('show');
+    videoWrap.style.display = 'none';
+    audioBtn.classList.add('show');
+  }
+
+  function startSequence(){
+    overlay.classList.add('fade-out');
+    setTimeout(function(){ overlay.style.display = 'none'; }, 1400);
+
+    videoWrap.classList.add('show');
+    introVideo.play().catch(function(){});
+    audio.volume = 1;
+    audio.play().catch(function(){});
+  }
+
+  overlay.addEventListener('click', startSequence);
+  overlay.addEventListener('touchstart', startSequence, {passive:true});
+
+  introVideo.addEventListener('timeupdate', function(){
+    if (introVideo.duration && (introVideo.duration - introVideo.currentTime) < 0.8){
+      videoWrap.classList.remove('show');
+      setTimeout(function(){
+        videoWrap.style.display = 'none';
+        audioBtn.classList.add('show');
+      }, 1400);
+    }
+  });
+
+  introVideo.addEventListener('ended', function(){
+    audioBtn.classList.add('show');
+  });
+
+  introVideo.addEventListener('error', function(){
+    revealMainContentImmediately();
+  });
+
+  /* Floating audio control */
+  const iconPause = document.getElementById('iconPause');
+  const iconPlay = document.getElementById('iconPlay');
+  audioBtn.addEventListener('click', function(){
+    if (audio.paused){
+      audio.play().catch(function(){});
+      iconPause.style.display = 'block';
+      iconPlay.style.display = 'none';
+    } else {
+      audio.pause();
+      iconPause.style.display = 'none';
+      iconPlay.style.display = 'block';
+    }
+  });
+})();
+
+/* ============================================================
+   JS BLOCK 2: COUNTDOWN
+============================================================ */
+(function(){
+  // Countdown target: 12 December 2026, 5:00 PM (Guest Arrival)
+  const targetDate = new Date('2026-12-12T17:00:00');
+
+  const daysEl = document.getElementById('cd-days');
+  const hoursEl = document.getElementById('cd-hours');
+  const minsEl = document.getElementById('cd-mins');
+  const secsEl = document.getElementById('cd-secs');
+  const wrap = document.getElementById('countdownWrap');
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function tick(){
+    const now = new Date();
+    const diff = targetDate - now;
+
+    if (diff <= 0){
+      wrap.innerHTML = '<div class="cd-done">See you there!</div>';
+      clearInterval(timer);
+      return;
+    }
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff / (1000*60*60)) % 24);
+    const mins = Math.floor((diff / (1000*60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+
+    daysEl.textContent = days;
+    hoursEl.textContent = pad(hours);
+    minsEl.textContent = pad(mins);
+    secsEl.textContent = pad(secs);
+  }
+
+  tick();
+  const timer = setInterval(tick, 1000);
+})();
+
+/* ============================================================
+   JS BLOCK 3: SCROLL REVEAL
+============================================================ */
+(function(){
+  const items = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(function(entries, obs){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting){
+        entry.target.classList.add('in');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  items.forEach(function(item){ observer.observe(item); });
+})();
+
+/* ============================================================
+   JS BLOCK 4: RSVP FORM
+============================================================ */
+(function(){
+  const openSeal = document.getElementById('openSeal');
+  const modal = document.getElementById('rsvpModal');
+  const closeModal = document.getElementById('closeModal');
+  const form = document.getElementById('rsvpForm');
+  const formView = document.getElementById('rsvpFormView');
+  const thankYouView = document.getElementById('thankYouView');
+  const childrenToggle = document.getElementById('childrenToggle');
+  const childrenNamesField = document.getElementById('childrenNamesField');
+
+  openSeal.addEventListener('click', function(){
+    modal.classList.add('open');
+    formView.style.display = 'block';
+    thankYouView.style.display = 'none';
+  });
+
+  closeModal.addEventListener('click', function(){
+    modal.classList.remove('open');
+  });
+
+  modal.addEventListener('click', function(e){
+    if (e.target === modal){ modal.classList.remove('open'); }
+  });
+
+  childrenToggle.addEventListener('change', function(){
+    childrenNamesField.style.display = childrenToggle.checked ? 'block' : 'none';
+  });
+
+  // Client-side submit only; structured so a real backend
+  // (Tilda forms, Formspree, etc.) can be wired to this same
+  // form fields/IDs without restructuring the HTML.
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    formView.style.display = 'none';
+    thankYouView.style.display = 'block';
+  });
+})();
+</script>
+
+</body>
+</html>
